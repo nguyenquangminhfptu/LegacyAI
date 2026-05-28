@@ -12,13 +12,15 @@ const AVATARS = [
 ]
 
 export default function AddMemberModal({ onClose, onAdded }) {
-  const { members, addMember } = useApp()
+  const { members, addMember, updateMember } = useApp()
   const [form, setForm] = useState({
     name: '',
     birthYear: '',
     gender: 'male',
     role: '',
+    relationType: 'child',
     parentId: '',
+    spouseTargetId: '',
     avatar: AVATARS[0],
     bio: '',
     hometown: '',
@@ -37,6 +39,8 @@ export default function AddMemberModal({ onClose, onAdded }) {
     if (!form.name.trim()) errs.name = 'Vui lòng nhập họ tên'
     if (!form.birthYear || isNaN(form.birthYear) || form.birthYear < 1800 || form.birthYear > 2026)
       errs.birthYear = 'Năm sinh không hợp lệ'
+    if (form.relationType === 'spouse' && !form.spouseTargetId)
+      errs.spouseTargetId = 'Vui lòng chọn người để ghép vợ/chồng'
     return errs
   }
 
@@ -45,6 +49,31 @@ export default function AddMemberModal({ onClose, onAdded }) {
     const errs = validate()
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
 
+    // ── Add as spouse ────────────────────────────────────────────────
+    if (form.relationType === 'spouse') {
+      const target = members.find(m => m.id === parseInt(form.spouseTargetId))
+      const newMember = addMember({
+        name: form.name.trim(),
+        birthYear: parseInt(form.birthYear),
+        gender: form.gender,
+        role: form.role.trim() || (form.gender === 'male' ? 'Chồng' : 'Vợ'),
+        parentIds: [],
+        spouseId: target ? target.id : null,
+        generation: target ? (target.generation ?? 0) : 0,
+        avatar: form.avatar,
+        bio: form.bio.trim(),
+        hometown: form.hometown.trim(),
+        occupation: form.occupation.trim(),
+        story: '',
+        deathYear: null,
+      })
+      // Link back so the spouse relationship is bidirectional
+      if (target) updateMember(target.id, { spouseId: newMember.id })
+      onAdded(newMember)
+      return
+    }
+
+    // ── Add as child ─────────────────────────────────────────────────
     const parentIds = form.parentId ? [parseInt(form.parentId)] : []
     // Also add spouse of parent if exists
     if (form.parentId) {
@@ -168,25 +197,83 @@ export default function AddMemberModal({ onClose, onAdded }) {
             />
           </div>
 
-          {/* Parent */}
+          {/* Relationship type */}
           <div>
             <label className="text-sm font-semibold text-stone-600 mb-1.5 block">
               <Link className="inline w-3.5 h-3.5 mr-1 text-brand-400" />
-              Con của (chọn cha hoặc mẹ)
+              Quan hệ với gia đình
             </label>
-            <select
-              value={form.parentId}
-              onChange={e => set('parentId', e.target.value)}
-              className="input-field"
-            >
-              <option value="">-- Không có (gốc rễ) --</option>
-              {members.map(m => (
-                <option key={m.id} value={m.id}>
-                  {m.name} ({m.birthYear}) – {m.role}
-                </option>
-              ))}
-            </select>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => set('relationType', 'child')}
+                className={`py-2.5 rounded-xl text-sm font-semibold border-2 transition ${
+                  form.relationType === 'child'
+                    ? 'border-brand-500 bg-brand-50 text-brand-700'
+                    : 'border-amber-100 text-stone-500 hover:border-brand-300'
+                }`}
+              >
+                👶 Là con của
+              </button>
+              <button
+                type="button"
+                onClick={() => set('relationType', 'spouse')}
+                className={`py-2.5 rounded-xl text-sm font-semibold border-2 transition ${
+                  form.relationType === 'spouse'
+                    ? 'border-brand-500 bg-brand-50 text-brand-700'
+                    : 'border-amber-100 text-stone-500 hover:border-brand-300'
+                }`}
+              >
+                💍 Là vợ/chồng của
+              </button>
+            </div>
           </div>
+
+          {/* Parent select (child mode) */}
+          {form.relationType === 'child' && (
+            <div>
+              <label className="text-sm font-semibold text-stone-600 mb-1.5 block">
+                Con của (chọn cha hoặc mẹ)
+              </label>
+              <select
+                value={form.parentId}
+                onChange={e => set('parentId', e.target.value)}
+                className="input-field"
+              >
+                <option value="">-- Không có (gốc rễ) --</option>
+                {members.map(m => (
+                  <option key={m.id} value={m.id}>
+                    {m.name} ({m.birthYear}) – {m.role}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Spouse select (spouse mode) */}
+          {form.relationType === 'spouse' && (
+            <div>
+              <label className="text-sm font-semibold text-stone-600 mb-1.5 block">
+                Vợ/Chồng của <span className="text-red-400">*</span>
+              </label>
+              <select
+                value={form.spouseTargetId}
+                onChange={e => set('spouseTargetId', e.target.value)}
+                className="input-field"
+              >
+                <option value="">-- Chọn người trong gia đình --</option>
+                {members.filter(m => !m.spouseId).map(m => (
+                  <option key={m.id} value={m.id}>
+                    {m.name} ({m.birthYear}) – {m.role}
+                  </option>
+                ))}
+              </select>
+              {errors.spouseTargetId && <p className="text-xs text-red-500 mt-1">{errors.spouseTargetId}</p>}
+              <p className="text-xs text-stone-400 mt-1.5">
+                Chỉ hiện những người chưa có vợ/chồng. Người mới sẽ được xếp cùng thế hệ.
+              </p>
+            </div>
+          )}
 
           {/* Hometown + Occupation */}
           <div className="grid grid-cols-2 gap-3">
