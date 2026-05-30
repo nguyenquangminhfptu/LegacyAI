@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 # Import feature module
-from feature.relationship_suggest import router as relationship_router
+from .feature.relationship_suggest import router as relationship_router
 
 app = FastAPI()
 
