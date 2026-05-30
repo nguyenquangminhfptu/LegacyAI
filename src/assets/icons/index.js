@@ -1,0 +1,9 @@
+// Exports icon file paths for easy importing
+export { default as ai } from './ai.svg';
+export { default as camera } from './camera.svg';
+export { default as airplane } from './airplane.svg';
+export { default as food } from './food.svg';
+export { default as graduate } from './graduate.svg';
+export { default as all } from './all.svg';
+export { default as star } from './star.svg';
+export { default as home } from './home.svg';

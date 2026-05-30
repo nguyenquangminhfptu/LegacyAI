@@ -2,7 +2,9 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { TreePine, Eye, EyeOff, ArrowRight } from 'lucide-react'
-
+import treeIcon from '../assets/icons/tree.png'
+import cameraIcon from '../assets/icons/camera.png'
+import aiIcon from '../assets/icons/ai.png'
 export default function LoginPage() {
   const { login } = useApp()
   const navigate = useNavigate()
@@ -51,12 +53,16 @@ export default function LoginPage() {
           {/* Feature cards */}
           <div className="space-y-3 text-left">
             {[
-              { icon: '🌳', title: 'Cây gia phả số', desc: 'Trực quan hóa dòng tộc qua nhiều thế hệ' },
-              { icon: '📸', title: 'Lưu trữ ký ức', desc: 'Hình ảnh, câu chuyện, cột mốc cuộc đời' },
-              { icon: '🤖', title: 'AI suy luận quan hệ', desc: 'Tự động nhận diện ông bà, cô chú, anh em' },
+              { icon: treeIcon, title: 'Cây gia phả số', desc: 'Trực quan hóa dòng tộc qua nhiều thế hệ' },
+              { icon: cameraIcon, title: 'Lưu trữ ký ức', desc: 'Hình ảnh, câu chuyện, cột mốc cuộc đời' },
+              { icon: aiIcon, title: 'AI suy luận quan hệ', desc: 'Tự động nhận diện ông bà, cô chú, anh em' },
             ].map((f, i) => (
               <div key={i} className="bg-white/10 backdrop-blur rounded-2xl p-4 flex gap-3 items-start">
-                <span className="text-2xl">{f.icon}</span>
+                {f.icon.startsWith('/') || f.icon.includes('.') ? (
+                  <img src={f.icon} alt={f.title} className="w-7 h-7 object-contain" />
+                ) : (
+                  <span className="text-2xl">{f.icon}</span>
+                )}
                 <div>
                   <p className="text-white font-semibold text-sm">{f.title}</p>
                   <p className="text-brand-200 text-xs mt-0.5">{f.desc}</p>
@@ -165,11 +171,11 @@ export default function LoginPage() {
             </form>
 
             {/* Demo hint */}
-            <div className="mt-6 p-3 bg-amber-50 rounded-xl border border-amber-100 text-center">
+            {/* <div className="mt-6 p-3 bg-amber-50 rounded-xl border border-amber-100 text-center">
               <p className="text-xs text-amber-700">
                 💡 <span className="font-semibold">Demo:</span> Nhập bất kỳ email/mật khẩu nào để đăng nhập
               </p>
-            </div>
+            </div> */}
           </div>
 
           <p className="text-center text-xs text-stone-400 mt-6">
