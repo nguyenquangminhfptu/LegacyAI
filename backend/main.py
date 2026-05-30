@@ -1,18 +1,23 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+
+# Import feature module
+from feature.relationship_suggest import router as relationship_router
 
 app = FastAPI()
 
-@app.post('/relationship_suggest')
-async def relationship_suggest(request: Request):
-    data = await request.json() if request.headers.get('content-type', '').startswith('application/json') else {}
-    return JSONResponse({
-        'status': 'success',
-        'endpoint': 'relationship_suggest',
-        'input': data,
-        'suggestions': []
-    })
+# CORS để Vite gọi về backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(relationship_router)
 
 @app.post('/enhance_photo')
 async def enhance_photo(request: Request):

@@ -9,6 +9,7 @@ help:
 	@echo "  make clean    - Dọn dẹp các tệp tin cache của Python (__pycache__)"
 
 install:
+	poetry lock
 	poetry install
 
 run:
