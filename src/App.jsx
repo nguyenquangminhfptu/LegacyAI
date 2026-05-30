@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage'
 import FamilyTreePage from './pages/FamilyTreePage'
 import MemberProfilePage from './pages/MemberProfilePage'
 import MemoryTimelinePage from './pages/MemoryTimelinePage'
-
+import CalendarPage from './pages/CalendarPage'
 function ProtectedRoute({ children }) {
   const { user } = useApp()
   if (!user) return <Navigate to="/" replace />
@@ -22,6 +22,7 @@ function AppRoutes() {
       <Route path="/family-tree"  element={<ProtectedRoute><FamilyTreePage /></ProtectedRoute>} />
       <Route path="/member/:id"   element={<ProtectedRoute><MemberProfilePage /></ProtectedRoute>} />
       <Route path="/timeline"     element={<ProtectedRoute><MemoryTimelinePage /></ProtectedRoute>} />
+      <Route path="/calendar"     element={<ProtectedRoute><CalendarPage /></ProtectedRoute>}/>
       <Route path="*"             element={<Navigate to="/" />} />
     </Routes>
   )
