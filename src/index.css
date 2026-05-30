@@ -54,3 +54,27 @@
 .page-enter {
   animation: fadeIn 0.3s ease-out;
 }
+/* Fix FullCalendar event text */
+.fc .fc-daygrid-event {
+  white-space: normal !important;
+  min-height: auto !important;
+  padding: 4px 6px !important;
+  border-radius: 8px !important;
+}
+
+.fc .fc-event-title {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  line-height: 1.25 !important;
+  font-size: 12px !important;
+}
+
+.fc .fc-event-main {
+  overflow: visible !important;
+}
+
+.fc .fc-event-main-frame {
+  display: block !important;
+  white-space: normal !important;
+}
