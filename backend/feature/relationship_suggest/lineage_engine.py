@@ -4,7 +4,6 @@ from .lineage_rules import (
     get_inlaw_rank_title
 )
 
-
 def _build_sibling_groups(members):
     groups = defaultdict(list)
 
@@ -22,7 +21,6 @@ def _build_sibling_groups(members):
                 x.get("id", 0)
             )
         )
-
     return groups
 
 def _find_member(members, member_id):
@@ -134,10 +132,7 @@ def calculate_lineage_role(member, members):
 
     return ""
 
-def build_display_role(
-    lineage_role,
-    family_role
-):
+def build_display_role(lineage_role, family_role):
     if lineage_role and family_role:
         return f"{lineage_role} – {family_role}"
     if lineage_role:
@@ -149,9 +144,5 @@ def build_display_role(
 
 def enrich_lineage_roles(members):
     for member in members:
-        member["lineage_role"] = calculate_lineage_role(
-            member,
-            members
-        )
-
+        member["lineage_role"] = calculate_lineage_role(member, members)
     return members
